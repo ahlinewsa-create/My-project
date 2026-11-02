@@ -1,5 +1,5 @@
 import datetime as dt
-import json, os, urllib.parse, urllib.request
+import json, os, urllib.parse, urllib.request, urllib.error
 from zoneinfo import ZoneInfo
 
 token = os.environ["GOATCOUNTER_API_TOKEN"]
@@ -12,8 +12,10 @@ request = urllib.request.Request(url, headers={"Authorization":"Bearer "+token,"
 try:
     with urllib.request.urlopen(request, timeout=30) as response:
         result = json.load(response)
+except urllib.error.HTTPError as error:
+    raise SystemExit(f"GoatCounter API returned HTTP {error.code}. Check token permissions and request parameters.") from None
 except Exception as error:
-    raise SystemExit("Could not read GoatCounter API ("+type(error).__name__+"). Check token and Read statistics permission.") from None
+    raise SystemExit("Could not read GoatCounter API ("+type(error).__name__+").") from None
 hits = result.get("hits")
 if not isinstance(hits,list):
     raise SystemExit("Unexpected API response: missing hits")
