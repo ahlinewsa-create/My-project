@@ -23,3 +23,9 @@ jobs:
           name: tal3d-daily-report
           path: reports/daily.md
           retention-days: 30
+      - name: Email daily report
+        env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_PASS: ${{ secrets.GMAIL_PASS }}
+          TO_EMAIL: ${{ secrets.TO_EMAIL }}
+        run: python scripts/email_daily.py
