@@ -1,0 +1,25 @@
+name: TaL 3D daily analytics
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Read GoatCounter and generate report
+        env:
+          GOATCOUNTER_API_TOKEN: ${{ secrets.GOATCOUNTER_API_TOKEN }}
+        run: python scripts/goatcounter_daily.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tal3d-daily-report
+          path: reports/daily.md
+          retention-days: 30
